@@ -5,12 +5,16 @@ const { authenticate } = require('./middleware/authenticate');
 
 const express = require('express');
 
+// This array is used to keep track of user records
+// as they are created.
+const users = [];
+
 // Construct a router instance.
 const router = express.Router();
 
 //Routes for the users
 //This route returns all properties and values for the current authenticated User.
-router.get('api/users', authenticate, asyncHandler (async (req, res) => {
+router.get('/users', authenticate, asyncHandler (async (req, res) => {
     const user = req.currentUser;
     res.json(user);
 }));

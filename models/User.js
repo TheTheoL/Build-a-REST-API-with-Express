@@ -15,11 +15,27 @@ module.exports = (sequelize) => {
     firstName: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
+        validate: {
+          notNull: {
+            msg: 'A first name is required'
+          },
+          notEmpty: {
+            msg: 'Please provide a first name'
+          }
+        }
+      },
     lastName: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
+        validate: {
+          notNull: {
+            msg: 'A last name is required'
+          },
+          notEmpty: {
+            msg: 'Please provide a last name'
+          }
+        }
+      },
     emailAddress: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -27,7 +43,20 @@ module.exports = (sequelize) => {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+        validate: {
+          notNull: {
+            msg: 'A password is required'
+          },
+          notEmpty: {
+            msg: 'Please provide a password'
+          },
+          len: {
+            args: [8, 20],
+            msg: 'The password should be between 8 and 20 characters in length'
+          }
+        }
+      },
+      confirmedP
 
   }, {sequelize});
 
@@ -36,7 +65,7 @@ module.exports = (sequelize) => {
         as: 'student',
         foreignKey: {
             fieldName: 'studentUserId',
-            allowNull: false,
+            allowNull: false
         }
       });
   }
