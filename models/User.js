@@ -56,7 +56,7 @@ module.exports = (sequelize) => {
           }
         }
       },
-      confirmedP
+      
 
   }, {sequelize});
 
