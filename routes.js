@@ -71,11 +71,26 @@ router.get('/courses/:id', asyncHandler(async (req, res, next) => {
   );
 
 //Route that will create a new course, set the Location header to the URI for the newly created course, and return a 201 HTTP status code and no content.
-router.post('courses/:id', authenticateUser, asyncHandler (async (req, res) => {
+router.post('/courses', authenticateUser, asyncHandler (async (req, res) => {
     const course = await Course.create(req.body);
     res.status(201).location(`/courses/${course.id}`).end();
 }));
-    
+
+//Route that will update the corresponding course and return a 204 HTTP status code and no content.
+router.put('/courses/:id', authenticateUser,
+asyncHandler(async (req, res, next) => {
+  const course = await Course.findByPk(req.params.id);
+    if (!course) {
+        const error = new Error();
+        error.status = 404;
+        error.message = 'Course not found';
+        next(error);
+    } else {
+        await course.update(req.body);
+        res.status(204).end();
+  }
+})
+);
 
 
 module.exports = router;
