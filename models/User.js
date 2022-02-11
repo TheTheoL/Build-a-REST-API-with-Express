@@ -58,7 +58,7 @@ module.exports = (sequelize) => {
           },
           set(val) {
             if(val === this.password) {
-                const hashedPassword = bcrypt.hashSync(this.password, salt);
+                const hashedPassword = bcrypt.hashSync(this.password, 8);
                 this.setDataValue('password', hashedPassword);
             }
         }
