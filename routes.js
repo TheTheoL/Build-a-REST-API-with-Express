@@ -24,7 +24,7 @@ router.get('/users', authenticateUser, asyncHandler (async (req, res) => {
 router.post('/users', asyncHandler(async (req, res) => {
     try {
       await User.create(req.body);
-      res.status(201).json({ "message": "Account successfully created!" });
+      res.status(201).location('/').end();
     } catch (error) {
       console.log('ERROR: ', error.name);
   
@@ -53,7 +53,7 @@ router.get('/courses', asyncHandler(async (req, res) => {
 //Route that will return the corresponding course including the User associated with that course and a 200 HTTP status code.
 router.get('/courses/:id', asyncHandler(async (req, res, next) => {
     const course = await Course.findByPk(req.params.id, {
-        inclide: {
+        include: {
             model: User,
             as: 'student',
             attributes: ['firstName', 'lastName', 'emailAddress']
@@ -72,24 +72,39 @@ router.get('/courses/:id', asyncHandler(async (req, res, next) => {
 
 //Route that will create a new course, set the Location header to the URI for the newly created course, and return a 201 HTTP status code and no content.
 router.post('/courses', authenticateUser, asyncHandler (async (req, res) => {
-    const course = await Course.create(req.body);
-    res.status(201).location(`/courses/${course.id}`).end();
+    try {
+        const course = await Course.create(req.body);
+        res.status(201).location(`/courses/${course.id}`).end();
+    }
+    catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            const errors = error.errors.map(err => err.message);
+            res.status(400).json({errors});
+          } else {
+            throw error;
+          }
+    } 
 }));
 
 //Route that will update the corresponding course and return a 204 HTTP status code and no content.
 router.put('/courses/:id', authenticateUser,
 asyncHandler(async (req, res, next) => {
-  const course = await Course.findByPk(req.params.id);
+    const course = await Course.findByPk(req.params.id);
     if (!course) {
-        const error = new Error();
-        error.status = 404;
-        error.message = 'Course not found';
-        next(error);
+      const error = new Error();
+      error.status = 404;
+      error.message = 'Course not found';
+      next(error);
+    } else if (req.currentUser.id !== course.userId) {
+      const error = new Error();
+      error.status = 403;
+      error.message = "Only the course's creator can update this course.";
+      next(error);
     } else {
-        await course.update(req.body);
-        res.status(204).end();
-  }
-})
+      await course.update(req.body);
+      res.status(204).end();
+    }
+  })
 );
 
 //route that will delete the corresponding course and return a 204 HTTP status code and no content.
