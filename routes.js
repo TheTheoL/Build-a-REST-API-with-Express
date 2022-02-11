@@ -38,7 +38,7 @@ router.post('/users', asyncHandler(async (req, res) => {
   }));
 //COURSE ROUTES
 
-return all courses including the user associated with the course.
+//return all courses including the user associated with the course.
 router.get('/courses', asyncHandler(async (req, res) => {
     const courses = await Course.findAll({
         include: {
