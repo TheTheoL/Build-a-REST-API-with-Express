@@ -27,5 +27,13 @@ exports.authenticateUser = async (req, res, next) => {
   } else {
       message = 'You have to login in to perform this action';
   }
-  next();
+  if (message) {
+    console.warn(message);
+    const error = new Error();
+    error.status = 401;
+    error.message = message;
+    next(error);
+  } else {
+    next();
+  }
 };
