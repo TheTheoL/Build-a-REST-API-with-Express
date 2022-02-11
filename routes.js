@@ -50,7 +50,8 @@ router.get('/courses', asyncHandler(async (req, res) => {
     res.status(200).json(courses);
 }));
 
-router.get('/courses/:id', asyncHandler(async (req, res) => {
+//Route that will return the corresponding course including the User associated with that course and a 200 HTTP status code.
+router.get('/courses/:id', asyncHandler(async (req, res, next) => {
     const course = await Course.findByPk(req.params.id, {
         inclide: {
             model: User,
@@ -68,7 +69,12 @@ router.get('/courses/:id', asyncHandler(async (req, res) => {
         }
     })
   );
-    
+
+//Route that will create a new course, set the Location header to the URI for the newly created course, and return a 201 HTTP status code and no content.
+router.post('courses/:id', authenticateUser, asyncHandler (async (req, res) => {
+    const course = await Course.create(req.body);
+    res.status(201).location(`/courses/${course.id}`).end();
+}));
     
 
 
