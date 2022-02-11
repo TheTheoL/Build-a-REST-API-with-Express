@@ -28,7 +28,7 @@ Course.associate = (models) => {
     Course.belongsTo(models.User, {
         as: 'student',
         foreignKey: {
-            fieldName: 'studentUserId',
+            fieldName: 'userId',
             allowNull: false,
         }
     });

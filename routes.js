@@ -1,10 +1,10 @@
 'use strict';
-const { User } = require('./models');
+const { User, Course } = require('./models');
 const { asyncHandler } = require('./middleware/async-handler');
 const { authenticateUser } = require('./middleware/authenticate');
 
 const express = require('express');
-const Course = require('./models/Course');
+
 
 // This array is used to keep track of user records
 // as they are created.
@@ -49,5 +49,27 @@ router.get('/courses', asyncHandler(async (req, res) => {
     });
     res.status(200).json(courses);
 }));
+
+router.get('/courses/:id', asyncHandler(async (req, res) => {
+    const course = await Course.findByPk(req.params.id, {
+        inclide: {
+            model: User,
+            as: 'student',
+            attributes: ['firstName', 'lastName', 'emailAddress']
+        }
+    });
+        if (!course) {
+            const error = new Error();
+            error.status = 404;
+            error.message = 'Course not found';
+            next(error);
+            } else {
+                res.status(200).json(course);
+        }
+    })
+  );
+    
+    
+
 
 module.exports = router;
