@@ -113,14 +113,9 @@ asyncHandler(async (req, res, next) => {
         error.status = 404;
         error.message = 'Course not found';
         next(error);
-    } else if (req.currentUser.id !== course.userId) {
-        const error = new Error();
-        error.status = 403;
-        error.message = "Only the user can delete this course.";
-        next(error);
-  } else {
-    await course.destroy();
-    res.status(204).end();
+    } else {
+        await course.update(req.body);
+        res.status(204).end();
   }
 })
 );
